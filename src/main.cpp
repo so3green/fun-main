@@ -58,6 +58,21 @@ void appendFile(fs::FS &fs, const char * path,const char * message){
     }
     file.close();
 }
+void writeFile(fs::FS &fs, const char * path, const char * message){
+    Serial.printf("Writing file: %s\r\n", path);
+
+    File file = fs.open(path, FILE_WRITE);
+    if(!file){
+        Serial.println("- failed to open file for writing");
+        return;
+    }
+    if(file.print(message)){
+        Serial.println("- file written");
+    } else {
+        Serial.println("- write failed");
+    }
+    file.close();
+}
 
 unsigned long prev, next, interval;
 void setup() {
@@ -140,6 +155,7 @@ void setup() {
     server.onNotFound(notFound);
 
     server.begin();
+    writeFile(SPIFFS, "/test.csv", "Hello ");
 }
 
 void loop() {
