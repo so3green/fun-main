@@ -73,7 +73,14 @@ void writeFile(fs::FS &fs, const char * path, const char * message){
     }
     file.close();
 }
-
+void listDir(fs::FS &fs, const char * dirname, uint8_t levels){
+    Serial.printf("Listing directory: %s\r\n", dirname);
+    File root = fs.open(dirname);
+    if(!root){
+      writeFile(SPIFFS, "/test.csv", "Hello ");
+      return;
+    }
+}
 unsigned long prev, next, interval;
 void setup() {
   FastLED.clear();
@@ -87,7 +94,7 @@ void setup() {
   pinMode(18,OUTPUT);
   pinMode(19,OUTPUT);
   pinMode(21,OUTPUT);
-  pinMode(readpin, INPUT);
+  pinMode(2, INPUT);
   //LED用のピンのセットアップ
   ledcAttachPin(25,0);
   ledcAttachPin(26,1);
@@ -155,8 +162,9 @@ void setup() {
     server.onNotFound(notFound);
 
     server.begin();
-    writeFile(SPIFFS, "/test.csv", "Hello ");
+    listDir(SPIFFS, "/test.csv", 0);
 }
+
 
 void loop() {
   distance = digitalRead(2);
@@ -167,6 +175,7 @@ void loop() {
   delay(50);
   //距離が20cm～40cmであったとき
   if(distance == 1){
+    appendFile(SPIFFS,"/test.csv",",");
     FastLED.clear();
     FastLED.show();
     ledcWrite(0,0);
@@ -213,6 +222,13 @@ void loop() {
       if((curr-prev) >= interval){
         //最終動作時刻の更新
         prev = curr;
+        distance = digitalRead(2);
+        if(distance == 0){
+          appendFile(SPIFFS,"/test.csv","0");
+        }
+        else if(distance == 1){
+          appendFile(SPIFFS,"/test.csv","1");
+        }
         //10個同時にLEDを作動させる
         if(when <= 10 && when >= 7){
           for(int l = 0; l < 6; l++){
@@ -386,12 +402,11 @@ void loop() {
         FastLED.clear();
         FastLED.show();
         delay(1000);
-        appendFile(SPIFFS,"/test.csv",",num");
         break;
       }
     }
   }
-  else if(distance == 1){
+  else if(distance == 0){
     ledcWrite(0,bright_small);
     ledcWrite(1,bright_none);
     ledcWrite(2,bright_none);
