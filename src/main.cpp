@@ -102,12 +102,12 @@ void setup() {
   ledcAttachPin(18,3);
   ledcAttachPin(19,4);
   ledcAttachPin(21,5);
-  ledcSetup(0,1000,10);
-  ledcSetup(1,1000,10);
-  ledcSetup(2,1000,10);
-  ledcSetup(3,1000,10);
-  ledcSetup(4,1000,10);
-  ledcSetup(5,1000,10);
+  ledcSetup(0,20000,10);
+  ledcSetup(1,20000,10);
+  ledcSetup(2,20000,10);
+  ledcSetup(3,20000,10);
+  ledcSetup(4,20000,10);
+  ledcSetup(5,20000,10);
   // シリアル通信の速度設定（115200を使用)
   Serial.begin(115200);
   FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
