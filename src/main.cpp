@@ -131,11 +131,17 @@ void setup() {
   Serial.print("AP IP address: ");
   Serial.println(myIP);
     server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
-        request->send(200, "text/html", "<a href=\"/test.csv\">dammy.csv</a>");
+        request->send(200, "text/html", "<a href=\"/test.csv\">download</a>\n<a href=\"/set.csv\">reset</a>");
     });
     server.on("/test.csv", HTTP_GET, [](AsyncWebServerRequest *request){
         request->send(SPIFFS, "/test.csv", "text/csv");
         delay(1) ;
+    });
+    server.on("/set.csv", HTTP_GET, [](AsyncWebServerRequest *request){
+        writeFile(SPIFFS, "/test.csv", "Hello ");
+        request->send(200, "text/html", "<a href=\"/test.csv\">download</a>\n<a href=\"/set.csv\">reset</a>");
+        delay(1) ;
+
     });
     // Send a GET request to <IP>/get?message=<message>
     server.on("/get", HTTP_GET, [] (AsyncWebServerRequest *request) {
@@ -208,12 +214,12 @@ void loop() {
       delay(2);
     }
     bright_red = 255;
-          bright_blue = 0;
-          bright_green = 0;
-          for(int i = 0; i < 144; i++){
-            leds[i]=CRGB(bright_red,bright_green,bright_blue);
-          }
-          FastLED.show();
+    bright_blue = 0;
+    bright_green = 0;
+    for(int i = 0; i < 144; i++){
+      leds[i]=CRGB(bright_red,bright_green,bright_blue);
+    }
+    FastLED.show();
     unsigned long start_time = millis();
     while(1){
       //時間の更新
@@ -295,16 +301,16 @@ void loop() {
         if(led_num == 78){
           for(int j=0; j <= led_num-1; j++){
             bright_red = 0;
-          bright_blue = 255;
-          bright_green = 255;
+            bright_blue = 255;
+            bright_green = 255;
             leds[j] = CRGB( bright_red, bright_green, bright_blue);
           }
         }
         if(led_num == 102){
           for(int j=0; j <= led_num-1; j++){
             bright_red = 150;
-          bright_blue = 255;
-          bright_green = 250;
+            bright_blue = 255;
+            bright_green = 250;
             leds[j] = CRGB( bright_red, bright_green, bright_blue);
           }
         }
@@ -407,11 +413,6 @@ void loop() {
     }
   }
   else if(distance == 0){
-    ledcWrite(0,bright_small);
-    ledcWrite(1,bright_none);
-    ledcWrite(2,bright_none);
-    ledcWrite(3,bright_none);
-    ledcWrite(4,bright_none);
-    ledcWrite(5,bright_none);
+    FastLED.clear();
   }
 }
